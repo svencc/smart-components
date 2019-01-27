@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
-import {AngularFireDatabase} from '@angular/fire/database';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
-import {Course} from "../shared/model/course";
-import {Lesson} from "../shared/model/lesson";
-import * as _ from 'lodash';
-import {map} from 'rxjs/operators';
+import {Lesson} from '../shared/model/lesson';
+import {switchMap, take} from 'rxjs/operators';
+import {CoursesService} from '../services/courses.service';
+import {LessonsService} from '../services/lessons.service';
+import {Observable, Subscription} from 'rxjs';
+import {Course} from '../shared/model/course';
 
 
 @Component({
@@ -12,40 +13,36 @@ import {map} from 'rxjs/operators';
   templateUrl: './course-detail.component.html',
   styleUrls: ['./course-detail.component.css']
 })
-export class CourseDetailComponent implements OnInit {
+export class CourseDetailComponent implements OnInit, OnDestroy {
 
-  course: Course;
-  lessons: Lesson[];
+  course$: Observable<Course>;
+  lessons$: Observable<Lesson[]>;
+  routeSubscription: Subscription;
 
-  constructor(private route: ActivatedRoute, private db: AngularFireDatabase) {
-
-
-      route.params
-          .subscribe( params => {
-
-              const courseUrl = params['id'];
-
-              this.db.list('courses', ref => ref.orderByChild('url').equalTo(courseUrl))
-              .snapshotChanges()
-              .pipe(
-                map( data => data[0])
-              )
-              .subscribe(data => {
-                  this.course = <Course>{
-                    id: data.payload.key
-                    ...data.payload.val()
-                  };
-
-                  this.db.list('lessons', ref => ref.orderByChild('courseId').equalTo(data.payload.key))
-                      .subscribe(lessons => this.lessons = lessons);
-              });
-
-          });
-
-  }
+  constructor(private route: ActivatedRoute,
+              private coursesService: CoursesService,
+              private lessonsService: LessonsService) { }
 
   ngOnInit() {
+    this.routeSubscription = this.route.params
+      .pipe(
+        take(1)
+      )
+      .subscribe(params => {
+          const courseUrl = params['id'];
+          this.course$ = this.coursesService.findCourseByUrl(courseUrl);
+          this.lessons$ = this.coursesService.findCourseKeyByUrl(courseUrl)
+            .pipe(
+              switchMap((courseKey: string) => {
+                return this.lessonsService.findLessonsForCourseKey(courseKey);
+              })
+            );
+        }
+      );
+  }
 
+  ngOnDestroy(): void {
+    this.routeSubscription.unsubscribe();
   }
 
 }

@@ -3,7 +3,7 @@
 
     <h2>Stateless Observable Services</h2>
 
-    <table class="courses-list card card-strong" *ngIf="courses">
+    <table class="courses-list card card-strong" *ngIf="(courses$ | async) as courses; else noCourses">
         <tr class="course-summary" *ngFor="let course of courses">
             <td>
                 <img class="lesson-logo"
@@ -20,12 +20,18 @@
             </td>
         </tr>
     </table>
+    <ng-template #noCourses>
+      <div>Loading ...</div>
+    </ng-template>
 
-    <div *ngIf="! courses">Loading ...</div>
+    <button class="button-highlight" (click)="changeCourseData()">Mutate Local Data</button>
+
+
+
 
     <h2>Latest Lessons Published</h2>
 
-    <table class="table lessons-list card card-strong" *ngIf="latestLessons">
+    <table class="table lessons-list card card-strong" *ngIf="(latestLessons$ | async) as latestLessons; else noLessons">
         <tbody>
         <tr *ngFor="let lesson of latestLessons">
             <td class="lesson-title"> {{lesson.description}}</td>
@@ -36,7 +42,8 @@
         </tr>
         </tbody>
     </table>
-
-    <div *ngIf="! latestLessons">Loading ...</div>
+    <ng-template #noLessons>
+      <div *ngIf="! latestLessons">Loading ...</div>
+    </ng-template>
 
 </div>
