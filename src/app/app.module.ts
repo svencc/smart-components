@@ -14,6 +14,7 @@ import {AngularFireDatabaseModule} from '@angular/fire/database';
 import {RouterModule} from '@angular/router';
 import {routerConfig} from "./router.config";
 import { CourseDetailComponent } from './course-detail/course-detail.component';
+import { CoursesListComponent } from './courses-list/courses-list.component';
 
 @NgModule({
   declarations: [
@@ -23,7 +24,8 @@ import { CourseDetailComponent } from './course-detail/course-detail.component';
     LessonsListComponent,
     LessonsCounterComponent,
     HomeComponent,
-    CourseDetailComponent
+    CourseDetailComponent,
+    CoursesListComponent
   ],
   imports: [
     BrowserModule,

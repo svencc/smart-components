@@ -1,49 +1,9 @@
-
 <div class="screen-container">
 
     <h2>Stateless Observable Services</h2>
-
-    <table class="courses-list card card-strong" *ngIf="(courses$ | async) as courses; else noCourses">
-        <tr class="course-summary" *ngFor="let course of courses">
-            <td>
-                <img class="lesson-logo"
-                     src="https://material.angularjs.org/latest/img/icons/angular-logo.svg">
-            </td>
-            <td class="description">
-                {{course.description}}
-            </td>
-            <td>
-                <button class="button button-primary"
-                        [routerLink]="['/course',course.url]">
-                    View
-                </button>
-            </td>
-        </tr>
-    </table>
-    <ng-template #noCourses>
-      <div>Loading ...</div>
-    </ng-template>
-
-    <button class="button-highlight" (click)="changeCourseData()">Mutate Local Data</button>
-
-
-
+    <courses-list [courses]="courses$ | async"></courses-list>
 
     <h2>Latest Lessons Published</h2>
-
-    <table class="table lessons-list card card-strong" *ngIf="(latestLessons$ | async) as latestLessons; else noLessons">
-        <tbody>
-        <tr *ngFor="let lesson of latestLessons">
-            <td class="lesson-title"> {{lesson.description}}</td>
-            <td class="duration">
-                <i class="md-icon duration-icon">access_time</i>
-                <span>{{lesson.duration}}</span>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-    <ng-template #noLessons>
-      <div *ngIf="! latestLessons">Loading ...</div>
-    </ng-template>
+    <lessons-list [latestLessons]="latestLessons$ | async"></lessons-list>
 
 </div>
